@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SH9ZII 3THIC9L H9CK3R</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#00ff41;
+  --dark-green:#003b00;
+  --bg:#050505;
+  --red:#ff003c;
+  --cyan:#00f0ff;
+}
+body{
+  background:var(--bg);
+  color:var(--green);
+  font-family:'Share Tech Mono',monospace;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+canvas#matrix{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:-2;opacity:0.15;
+}
+.scanlines{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  pointer-events:none;z-index:999;
+}
+/* NAV */
+nav{
+  position:fixed;top:0;width:100%;
+  background:rgba(0,0,0,0.92);
+  border-bottom:1px solid var(--green);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 30px;z-index:100;
+  backdrop-filter:blur(8px);
+}
+.logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;font-size:1.3rem;
+  letter-spacing:3px;
+  text-shadow:0 0 10px var(--green);
+}
+.logo span{color:var(--red)}
+.nav-links{display:flex;gap:25px;list-style:none}
+.nav-links a{
+  color:var(--green);text-decoration:none;font-size:0.85rem;
+  letter-spacing:1px;transition:0.3s;
+}
+.nav-links a:hover{color:#fff;text-shadow:0 0 8px var(--green)}
+.menu-btn{display:none;background:none;border:1px solid var(--green);color:var(--green);font-size:1.4rem;padding:4px 12px;cursor:pointer}
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:100px 20px 60px;position:relative;
+}
+.terminal{
+  background:#0a0a0a;border:1px solid var(--green);
+  border-radius:6px;width:100%;max-width:700px;
+  box-shadow:0 0 30px rgba(0,255,65,0.15);
+  margin-bottom:40px;overflow:hidden;
+}
+.term-header{
+  background:#111;padding:8px 15px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid #222;
+}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+.term-title{margin-left:10px;font-size:0.8rem;color:#888}
+.term-body{padding:20px;font-size:0.95rem;text-align:left}
+.prompt{color:var(--cyan)}
+.cursor{animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.main-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(2rem,6vw,3.8rem);
+  font-weight:900;letter-spacing:4px;
+  text-shadow:0 0 20px var(--green),0 0 40px var(--green);
+  margin-bottom:15px;
+}
+.main-title .red{color:var(--red);text-shadow:0 0 15px var(--red)}
+.subtitle{font-size:1.1rem;color:#aaa;margin-bottom:35px;letter-spacing:2px}
+.cta{
+  display:inline-block;padding:14px 40px;
+  border:2px solid var(--green);color:var(--green);
+  text-decoration:none;font-family:'Orbitron',sans-serif;
+  font-weight:700;letter-spacing:2px;transition:0.3s;
+  text-transform:uppercase;
+}
+.cta:hover{background:var(--green);color:#000;box-shadow:0 0 25px var(--green)}
+/* SECTIONS */
+section{padding:80px 20px;max-width:1100px;margin:0 auto}
+.sec-title{
+  font-family:'Orbitron',sans-serif;font-size:1.8rem;
+  margin-bottom:40px;display:flex;align-items:center;gap:15px;
+}
+.sec-num{color:var(--red);font-size:1.2rem}
+.content p{margin-bottom:18px;color:#ccc;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px}
+.card{
+  background:rgba(0,20,0,0.6);border:1px solid #0f3d0f;
+  padding:25px;border-radius:4px;transition:0.3s;
+}
+.card:hover{border-color:var(--green);box-shadow:0 0 15px rgba(0,255,65,0.2)}
+.card h3{color:var(--green);margin-bottom:10px;font-size:1.1rem}
+.card.danger{border-color:#5c0000}
+.card.danger h3{color:var(--red)}
+.card p{color:#aaa;font-size:0.9rem}
+/* PHASES */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.phase{
+  background:#0a0a0a;border-left:3px solid var(--green);
+  padding:20px 22px;position:relative;
+}
+.phase-num{position:absolute;top:12px;right:15px;font-size:2rem;opacity:0.15;font-family:'Orbitron'}
+.phase h3{color:var(--green);margin-bottom:8px}
+.phase p{color:#999;font-size:0.9rem}
+/* TOOLS */
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+.tool{
+  background:#0a0a0a;border:1px solid #1a1a1a;
+  padding:18px;text-align:center;transition:0.3s;
+}
+.tool:hover{border-color:var(--green);transform:translateY(-3px)}
+.tool h4{color:var(--cyan);margin-bottom:6px}
+.tool p{color:#777;font-size:0.8rem}
+/* CERTS */
+.certs{display:flex;flex-direction:column;gap:12px}
+.cert{
+  display:flex;align-items:center;gap:20px;
+  background:#0a0a0a;padding:16px 22px;
+  border-left:3px solid var(--green);
+}
+.cert-name{font-family:'Orbitron';font-weight:700;color:var(--green);min-width:140px}
+.cert-full{color:#aaa;font-size:0.95rem}
+/* WARNING */
+.warning-box{
+  background:linear-gradient(135deg,#1a0000,#0a0000);
+  border:2px solid var(--red);
+  padding:40px 30px;text-align:center;
+  box-shadow:0 0 40px rgba(255,0,60,0.15);
+}
+.warning-box h2{color:var(--red);font-family:'Orbitron';font-size:1.8rem;margin-bottom:20px;text-shadow:0 0 15px var(--red)}
+.warning-box ul{text-align:left;max-width:600px;margin:25px auto;color:#ccc}
+.warning-box li{margin-bottom:10px}
+.final{margin-top:25px;color:var(--red);font-weight:700;letter-spacing:1px}
+/* FOOTER */
+footer{
+  text-align:center;padding:40px 20px;
+  border-top:1px solid #111;color:#555;font-size:0.85rem;
+}
+footer .sub{color:#333;margin-top:6px}
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .menu-btn{display:block}
+  .mobile-menu{
+    display:none;position:fixed;top:60px;left:0;width:100%;
+    background:#000;border-bottom:1px solid var(--green);
+    flex-direction:column;padding:20px;z-index:99;
+  }
+  .mobile-menu.show{display:flex}
+  .mobile-menu a{color:var(--green);padding:12px;text-decoration:none;border-bottom:1px solid #111}
+}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+
+<nav>
+  <div class="logo">SH9ZII <span>3THIC9L</span> H9CK3R</div>
+  <ul class="nav-links">
+    <li><a href="#home">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#phases">PHASES</a></li>
+    <li><a href="#tools">TOOLS</a></li>
+    <li><a href="#certs">CERTS</a></li>
+    <li><a href="#warning">WARNING</a></li>
+  </ul>
+  <button class="menu-btn" onclick="document.querySelector('.mobile-menu').classList.toggle('show')">☰</button>
+</nav>
+
+<div class="mobile-menu">
+  <a href="#home" onclick="this.parentElement.classList.remove('show')">HOME</a>
+  <a href="#about" onclick="this.parentElement.classList.remove('show')">ABOUT</a>
+  <a href="#phases" onclick="this.parentElement.classList.remove('show')">PHASES</a>
+  <a href="#tools" onclick="this.parentElement.classList.remove('show')">TOOLS</a>
+  <a href="#certs" onclick="this.parentElement.classList.remove('show')">CERTS</a>
+  <a href="#warning" onclick="this.parentElement.classList.remove('show')">WARNING</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="terminal">
+    <div class="term-header">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-title">root@sh9zii:~#</span>
+    </div>
+    <div class="term-body">
+      <p><span class="prompt">$</span> <span id="typewriter"></span><span class="cursor">█</span></p>
+      <p style="margin-top:12px;color:#0f0">Access granted // Study mode active</p>
+      <p style="color:#0ff">Purpose: EDUCATION & DEFENSE ONLY</p>
+      <p style="color:#888">> System ready. Knowledge is power.</p>
+    </div>
+  </div>
+  <h1 class="main-title">SH9ZII <span class="red">3THIC9L</span> H9CK3R</h1>
+  <p class="subtitle">Study. Understand. Defend. Never Attack.</p>
+  <a href="#about" class="cta">Enter The Lab →</a>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <h2 class="sec-title"><span class="sec-num">01 //</span> WHAT IS ETHICAL HACKING?</h2>
+  <div class="content">
+    <p>Ethical Hacking (White Hat) is the <strong style="color:#0f0">authorized</strong> practice of testing systems to find weaknesses before criminals do.</p>
+    <p>Goal is simple: improve security, protect data, and make the digital world safer. It is legal only when done with proper permission.</p>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3>WHITE HAT</h3>
+      <p>Authorized • Legal • Defensive<br>Works with permission to secure systems.</p>
+    </div>
+    <div class="card">
+      <h3>GREY HAT</h3>
+      <p>Sometimes crosses lines. Finds bugs without permission but usually reports them.</p>
+    </div>
+    <div class="card danger">
+      <h3>BLACK HAT</h3>
+      <p>Illegal • Malicious • Criminal<br>Exploits systems for gain or damage. NEVER do this.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHASES -->
+<section id="phases">
+  <h2 class="sec-title"><span class="sec-num">02 //</span> PHASES OF ETHICAL HACKING</h2>
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-num">01</div>
+      <h3>RECONNAISSANCE</h3>
+      <p>Gathering information about the target. Passive or active. Understanding the surface.</p>
+    </div>
+    <div class="phase">
+      <div class="phase-num">02</div>
+      <h3>SCANNING</h3>
+      <p>Finding open ports, services and live systems. Mapping the attack surface.</p>
+    </div>
+    <div class="phase">
+      <div class="phase-num">03</div>
+      <h3>GAINING ACCESS</h3>
+      <p>Exploiting vulnerabilities in a controlled & authorized environment only.</p>
+    </div>
+    <div class="phase">
+      <div class="phase-num">04</div>
+      <h3>MAINTAINING ACCESS</h3>
+      <p>Understanding how attackers stay inside — so defenders can detect & remove them.</p>
+    </div>
+    <div class="phase">
+      <div class="phase-num">05</div>
+      <h3>COVERING TRACKS</h3>
+      <p>Learning how evidence is hidden — so security teams can still catch it.</p>
+    </div>
+    <div class="phase">
+      <div class="phase-num">06</div>
+      <h3>REPORTING</h3>
+      <p>Documenting every finding and giving clear recommendations. Most important phase.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <h2 class="sec-title"><span class="sec-num">03 //</span> COMMON TOOLS (NAMES ONLY)</h2>
+  <p style="color:#888;margin-bottom:25px;font-size:0.95rem">These tools are used by professionals. Knowing their names is part of study. Actual use requires authorization & proper training.</p>
+  <div class="tools">
+    <div class="tool"><h4>Nmap</h4><p>Network discovery & port scanning</p></div>
+    <div class="tool"><h4>Wireshark</h4><p>Network protocol analyzer</p></div>
+    <div class="tool"><h4>Metasploit</h4><p>Penetration testing framework</p></div>
+    <div class="tool"><h4>Burp Suite</h4><p>Web application security testing</p></div>
+    <div class="tool"><h4>John the Ripper</h4><p>Password auditing</p></div>
+    <div class="tool"><h4>Aircrack-ng</h4><p>Wireless security testing</p></div>
+    <div class="tool"><h4>SQLmap</h4><p>SQL injection detection (study)</p></div>
+    <div class="tool"><h4>OWASP ZAP</h4><p>Open-source web app scanner</p></div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs">
+  <h2 class="sec-title"><span class="sec-num">04 //</span> RECOGNIZED CERTIFICATIONS</h2>
+  <div class="certs">
+    <div class="cert"><span class="cert-name">CEH</span><span class="cert-full">Certified Ethical Hacker (EC-Council)</span></div>
+    <div class="cert"><span class="cert-name">OSCP</span><span class="cert-full">Offensive Security Certified Professional</span></div>
+    <div class="cert"><span class="cert-name">CompTIA Sec+</span><span class="cert-full">Foundational cybersecurity certification</span></div>
+    <div class="cert"><span class="cert-name">CISSP</span><span class="cert-full">Certified Information Systems Security Professional</span></div>
+    <div class="cert"><span class="cert-name">eJPT</span><span class="cert-full">eLearnSecurity Junior Penetration Tester</span></div>
+    <div class="cert"><span class="cert-name">PNPT</span><span class="cert-full">Practical Network Penetration Tester</span></div>
+  </div>
+</section>
+
+<!-- WARNING -->
+<section id="warning">
+  <div class="warning-box">
+    <h2>⚠ CRITICAL WARNING</h2>
+    <p style="color:#ccc;max-width:600px;margin:0 auto 20px">This website is created strictly for <strong style="color:#0f0">educational and study purposes</strong>.</p>
+    <ul>
+      <li>Never access any system without explicit written permission.</li>
+      <li>Unauthorized access is a serious crime under the law.</li>
+      <li>Ethical hacking is about defending — not attacking.</li>
+      <li>Always practice only in legal labs, CTFs, or your own systems.</li>
+    </ul>
+    <p class="final">[!] ILLEGAL HACKING CAN LEAD TO IMPRISONMENT.<br>Stay on the right side. Learn to protect.</p>
+  </div>
+</section>
+
+<footer>
+  <p>SH9ZII 3THIC9L H9CK3R © 2026</p>
+  <p class="sub">Built for Knowledge • Not Destruction • Study Purpose Only</p>
+</footer>
+
+<script>
+// Matrix rain
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw(){
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#0f0';
+  ctx.font = fontSize + 'px monospace';
+  for(let i=0;i<drops.length;i++){
+    const text = chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 35);
+window.addEventListener('resize',()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Typewriter
+const texts = [
+  "initializing_shadow_module...",
+  "loading ethical_hacking_knowledge...",
+  "access_level: STUDENT",
+  "welcome to SH9ZII 3THIC9L H9CK3R"
+];
+let tIndex = 0, cIndex = 0;
+const el = document.getElementById('typewriter');
+function type(){
+  if(cIndex < texts[tIndex].length){
+    el.textContent += texts[tIndex].charAt(cIndex);
+    cIndex++;
+    setTimeout(type, 45);
+  } else {
+    setTimeout(()=>{
+      el.textContent = '';
+      cIndex = 0;
+      tIndex = (tIndex+1) % texts.length;
+      type();
+    }, 1800);
+  }
+}
+type();
+</script>
+</body>
+</html>
